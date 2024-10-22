@@ -1,0 +1,8 @@
+app.log
+events.log
+venv
+azure.json
+acr_onboarding.bash
+.env
+test.md
+appeu.env
