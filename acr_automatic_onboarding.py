@@ -51,8 +51,8 @@ def add_container_registries(base_url, token, existing_container_registries, acr
                 "os": "linux",
                 "harborDeploymentSecurity": False,
                 "collections": ["All"],
-                "cap": 3,
-                "scanners": 7,
+                "cap": 2,
+                "scanners": 6,
                 "versionPattern": "",
                 "gitlabRegistrySpec": {},
             }
