@@ -10,7 +10,6 @@ from dotenv import load_dotenv
 # Create a logger object
 logger = logging.getLogger()
 
-
 def add_container_registries(base_url, token, existing_container_registries, acr_list, account, force=False):
     accountId, accountName = account  # Unpack account tuple
     url = f"{base_url}/api/v1/settings/registry?project=Central+Console&scanLater=false"
@@ -52,8 +51,8 @@ def add_container_registries(base_url, token, existing_container_registries, acr
                 "os": "linux",
                 "harborDeploymentSecurity": False,
                 "collections": ["All"],
-                "cap": 2,
-                "scanners": 6,
+                "cap": 3,
+                "scanners": 7,
                 "versionPattern": "",
                 "gitlabRegistrySpec": {},
             }
@@ -251,8 +250,7 @@ def get_subscriptions_by_tenant(base_url, token, azure_tenant_id):
         {
             "limit": limit,
             "query": rql,
-            "timeRange": {"type": "relative", "value": {"unit": "hour", "amount": 24}, "relativeTimeType": "BACKWARD"},
-            "nextPageToken": next_page_token,
+            "timeRange": {"type": "relative", "value": {"unit": "hour", "amount": 6}, "relativeTimeType": "BACKWARD"}
         }
     )
 
@@ -283,8 +281,12 @@ def get_subscriptions_by_tenant(base_url, token, azure_tenant_id):
             }
         )
 
-        response = requests.post(url, headers=headers, data=payload)
-        response.raise_for_status()  # Raises a HTTPError if the status is 4xx, 5xx
+        try:
+            response = requests.post(url, headers=headers, data=payload)
+            response.raise_for_status()  # Raises a HTTPError if the status is 4xx, 5xx
+        except requests.exceptions.RequestException as err:
+            logger.error("Oops! An exception occurred in get_subscriptions_by_tenant with NextPageToken, ", err)
+            return None
 
         json_response = response.json()
         # Append the items from the next page to items list
@@ -418,7 +420,7 @@ def main():
     args = parser.parse_args()
 
     load_dotenv()
-    url = os.environ.get("PRISMA_API_URL_NEW")
+    url = os.environ.get("PRISMA_API_URL")
     identity = os.environ.get("PRISMA_ACCESS_KEY")
     secret = os.environ.get("PRISMA_SECRET_KEY")
     azure_client_id = os.environ.get("AZURE_CLIENT_ID")
