@@ -5,4 +5,4 @@ azure.json
 acr_onboarding.bash
 .env
 test.md
-appeu.env
+*.env
