@@ -1,6 +1,7 @@
 name: Scheduled - ACR Onboarding
 
 on:
+  workflow_dispatch:  # Triggered manually via GitHub UI  
   schedule:
     - cron: '0 6 * * 1'  # At 06:00 on Monday
 
