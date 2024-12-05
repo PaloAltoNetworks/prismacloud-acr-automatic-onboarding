@@ -27,15 +27,19 @@ jobs:
     steps:
       - name: Checkout Repository Content
         uses: actions/checkout@v3
-
-      - name: Construct Azure Credentials
-        id: construct_creds
-        run: |
-          echo "{\"clientId\":\"${{ secrets.APP2_AZURE_CLIENT_ID }}\",\"clientSecret\":\"${{ secrets.APP2_AZURE_CLIENT_SECRET }}\",\"subscriptionId\":\"${{ env.AZURE_SUBSCRIPTION_ID }}\",\"tenantId\":\"${{ secrets.APP2_AZURE_TENANT_ID }}\"}" > azure_credentials.json
-          echo "AZURE_CREDENTIALS=$(cat azure_credentials.json)" >> $GITHUB_ENV
-
+        
       - name: Azure Login
         uses: azure/login@v1
+        env:
+          AZURE_CREDENTIALS: |
+            {
+              "clientId": "${{ secrets.APP2_AZURE_CLIENT_ID }}",
+              "clientSecret": "${{ secrets.APP2_AZURE_CLIENT_SECRET }}",
+              "subscriptionId": "${{ env.AZURE_SUBSCRIPTION_ID }}",
+              "tenantId": "${{ secrets.APP2_AZURE_TENANT_ID }}"
+            }
+        with:
+          creds: ${{ env.AZURE_CREDENTIALS }}
 
       - name: Check the role
         env:
