@@ -31,7 +31,7 @@ jobs:
       - name: Construct Azure Credentials
         id: construct_creds
         run: |
-          echo "{\"clientId\":\"${{ secrets.APP2_AZURE_CLIENT_ID }}\",\"clientSecret\":\"${{ secrets.APP2_AZURE_CLIENT_SECRET }}\",\"subscriptionId\":\"${{ secrets.AZURE_SUBSCRIPTION_ID }}\",\"tenantId\":\"${{ secrets.APP2_AZURE_TENANT_ID }}\"}" > azure_credentials.json
+          echo "{\"clientId\":\"${{ secrets.APP2_AZURE_CLIENT_ID }}\",\"clientSecret\":\"${{ secrets.APP2_AZURE_CLIENT_SECRET }}\",\"subscriptionId\":\"${{ env.AZURE_SUBSCRIPTION_ID }}\",\"tenantId\":\"${{ secrets.APP2_AZURE_TENANT_ID }}\"}" > azure_credentials.json
           echo "AZURE_CREDENTIALS=$(cat azure_credentials.json)" >> $GITHUB_ENV
 
       - name: Azure Login
