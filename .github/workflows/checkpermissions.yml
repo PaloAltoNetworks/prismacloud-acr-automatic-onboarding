@@ -27,26 +27,19 @@ jobs:
     steps:
       - name: Checkout Repository Content
         uses: actions/checkout@v3
-        
+
       - name: Azure Login
         uses: azure/login@v1
-        env:
-          AZURE_CREDENTIALS: |
+        with:
+          creds: |
             {
               "clientId": "${{ secrets.APP2_AZURE_CLIENT_ID }}",
               "clientSecret": "${{ secrets.APP2_AZURE_CLIENT_SECRET }}",
               "subscriptionId": "${{ env.AZURE_SUBSCRIPTION_ID }}",
               "tenantId": "${{ secrets.APP2_AZURE_TENANT_ID }}"
             }
-        with:
-          creds: ${{ env.AZURE_CREDENTIALS }}
 
       - name: Check the role
-        env:
-          APP_ID: ${{ env.AZURE_CLIENT_ID }}
-          SUBSCRIPTION_ID: ${{ env.SUBSCRIPTION_ID }}
-          RESOURCE_GROUP: ${{ env.RESOURCE_GROUP }}
-          ACR_NAME: ${{ env.ACR_NAME }}
         run: |          
           az role assignment list --assignee $APP_ID --scope /subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.ContainerRegistry/registries/$ACR_NAME
       
