@@ -387,11 +387,15 @@ def login_saas(base_url, access_key, secret_key):
 
 
 def login_compute(base_url, access_key, secret_key):
+    logger.info(f"access_key: {base_url}")
+    logger.info(f"access_key: {access_key}")
+    logger.info(f"access_key: {secret_key}")
     url = f"{base_url}/api/v1/authenticate"
 
     payload = json.dumps({"username": access_key, "password": secret_key})
     headers = {"content-type": "application/json; charset=UTF-8"}
     response = requests.post(url, headers=headers, data=payload)
+    logger.info(f"access_key: {response}")
     return response.json()["token"]
 
 
@@ -417,6 +421,7 @@ def main():
     parser.add_argument("--onboard", action="store_true", help="Onboard ACR container registries from CSPM.")
     parser.add_argument("--force-onboard", action="store_true", help="Force Onboard ACR container registries from CSPM.")
     parser.add_argument("--update", action="store_true", help="Onboard newly added container registries.")
+    parser.add_argument("--quicktest", action="store_true", help="Test.")
     args = parser.parse_args()
 
     load_dotenv()
@@ -434,82 +439,85 @@ def main():
         return
 
     token = login_saas(url, identity, secret)
-    compute_url = get_compute_url(url, token)
-    compute_token = login_compute(compute_url, identity, secret)
-    logger.debug(f"Compute url: {compute_url}")
+    # compute_url = get_compute_url(url, token)
+    # compute_token = login_compute(compute_url, identity, secret)
+    # logger.debug(f"Compute url: {compute_url}")
 
     if token is None:
         logger.error("Unable to authenticate.")
         return
 
-    if args.report:
-        logger.info("Running in report mode")
-        registry_count = get_images_number_per_regristry(compute_url, compute_token)
+    # if args.report:
+    #     logger.info("Running in report mode")
+    #     registry_count = get_images_number_per_regristry(compute_url, compute_token)
 
-        for registry, count in registry_count.items():
-            logger.info(f"Registry: {registry}, Number of Images: {count}")
-    if args.update:
-        logger.info("Running in update mode")
+    #     for registry, count in registry_count.items():
+    #         logger.info(f"Registry: {registry}, Number of Images: {count}")
+    # if args.update:
+    #     logger.info("Running in update mode")
 
-        acr_list_from_cspm = get_acr(url, token)
-        acr_list_from_cwp = get_container_registries(compute_url, compute_token)
+    #     acr_list_from_cspm = get_acr(url, token)
+    #     acr_list_from_cwp = get_container_registries(compute_url, compute_token)
 
-        # Extract the registry names and convert them to the appropriate format
-        registries_from_cwp = {resource["registry"] for resource in acr_list_from_cwp["specifications"]}
+    #     # Extract the registry names and convert them to the appropriate format
+    #     registries_from_cwp = {resource["registry"] for resource in acr_list_from_cwp["specifications"]}
 
-        # Modify acr_list_from_cspm to exclude registries that are already onboarded
-        acr_list_from_cspm["resources"] = [
-            resource
-            for resource in acr_list_from_cspm["resources"]
-            if f"{resource['name']}.azurecr.io" not in registries_from_cwp
-        ]
+    #     # Modify acr_list_from_cspm to exclude registries that are already onboarded
+    #     acr_list_from_cspm["resources"] = [
+    #         resource
+    #         for resource in acr_list_from_cspm["resources"]
+    #         if f"{resource['name']}.azurecr.io" not in registries_from_cwp
+    #     ]
 
-        onboard_workflow(
-            url,
-            token,
-            compute_url,
-            compute_token,
-            azure_client_id,
-            azure_client_secret,
-            acr_list_from_cspm,
-            acr_list_from_cwp,
-            azure_tenant_id,
-        )
+    #     onboard_workflow(
+    #         url,
+    #         token,
+    #         compute_url,
+    #         compute_token,
+    #         azure_client_id,
+    #         azure_client_secret,
+    #         acr_list_from_cspm,
+    #         acr_list_from_cwp,
+    #         azure_tenant_id,
+    #     )
 
-    elif args.onboard:
-        logger.info("Running in onboard mode")
-        acr_list_from_cspm = get_acr(url, token)
-        acr_list_from_cwp = get_container_registries(compute_url, compute_token)
+    # elif args.onboard:
+    #     logger.info("Running in onboard mode")
+    #     acr_list_from_cspm = get_acr(url, token)
+    #     acr_list_from_cwp = get_container_registries(compute_url, compute_token)
 
-        onboard_workflow(
-            url,
-            token,
-            compute_url,
-            compute_token,
-            azure_client_id,
-            azure_client_secret,
-            acr_list_from_cspm,
-            acr_list_from_cwp,
-            azure_tenant_id,
-            args.force_onboard,
-        )
-    elif args.force_onboard:
-        logger.info("Running in FORCE onboard mode")
-        acr_list_from_cspm = get_acr(url, token)
-        acr_list_from_cwp = get_container_registries(compute_url, compute_token)
+    #     onboard_workflow(
+    #         url,
+    #         token,
+    #         compute_url,
+    #         compute_token,
+    #         azure_client_id,
+    #         azure_client_secret,
+    #         acr_list_from_cspm,
+    #         acr_list_from_cwp,
+    #         azure_tenant_id,
+    #         False,
+    #     )
+    # elif args.force_onboard:
+    #     logger.info("Running in FORCE onboard mode")
+    #     acr_list_from_cspm = get_acr(url, token)
+    #     acr_list_from_cwp = get_container_registries(compute_url, compute_token)
 
-        onboard_workflow(
-            url,
-            token,
-            compute_url,
-            compute_token,
-            azure_client_id,
-            azure_client_secret,
-            acr_list_from_cspm,
-            acr_list_from_cwp,
-            azure_tenant_id,
-            True,
-        )
+    #     onboard_workflow(
+    #         url,
+    #         token,
+    #         compute_url,
+    #         compute_token,
+    #         azure_client_id,
+    #         azure_client_secret,
+    #         acr_list_from_cspm,
+    #         acr_list_from_cwp,
+    #         azure_tenant_id,
+    #         True,
+    #     )
+    if args.quicktest:
+        logger.info("Running in TEST onboard mode")
+        get_subscriptions_by_tenant(url, token, azure_tenant_id)
     else:
         logger.error("No arguments provided.")
 
