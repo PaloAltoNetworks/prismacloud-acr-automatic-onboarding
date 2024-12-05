@@ -28,12 +28,16 @@ jobs:
       - name: Checkout Repository Content
         uses: actions/checkout@v3
 
+      - name: Construct Azure Credentials
+        id: construct_creds
+        run: |
+          echo "{\"clientId\":\"${{ secrets.APP2_AZURE_CLIENT_ID }}\",\"clientSecret\":\"${{ secrets.APP2_AZURE_CLIENT_SECRET }}\",\"subscriptionId\":\"${{ secrets.AZURE_SUBSCRIPTION_ID }}\",\"tenantId\":\"${{ secrets.APP2_AZURE_TENANT_ID }}\"}" > azure_credentials.json
+          echo "AZURE_CREDENTIALS=$(cat azure_credentials.json)" >> $GITHUB_ENV
+
       - name: Azure Login
         uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_JSON_CREDENTIALS }}
 
-      - name: Execute Azure CLI Command
+      - name: Check the role
         env:
           APP_ID: ${{ env.AZURE_CLIENT_ID }}
           SUBSCRIPTION_ID: ${{ env.SUBSCRIPTION_ID }}
@@ -41,3 +45,4 @@ jobs:
           ACR_NAME: ${{ env.ACR_NAME }}
         run: |          
           az role assignment list --assignee $APP_ID --scope /subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.ContainerRegistry/registries/$ACR_NAME
+      
