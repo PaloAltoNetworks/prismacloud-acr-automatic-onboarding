@@ -3,9 +3,6 @@ name: Check Azure Permissions
 on:
   workflow_dispatch:
     inputs:
-      SUBSCRIPTION_ID:
-        description: 'Subscription ID'
-        required: true
       ACR_NAME:
         description: 'ACR Name'
         required: true
@@ -17,10 +14,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      AZURE_CLIENT_ID: ${{ secrets.APP2_AZURE_CLIENT_ID }}
-      AZURE_CLIENT_SECRET: ${{ secrets.APP2_AZURE_CLIENT_SECRET }}
-      AZURE_TENANT_ID: ${{ secrets.APP2_AZURE_TENANT_ID }}
-      SUBSCRIPTION_ID: ${{ github.event.inputs.SUBSCRIPTION_ID }}
       ACR_NAME: ${{ github.event.inputs.ACR_NAME }}
       RESOURCE_GROUP: ${{ github.event.inputs.RESOURCE_GROUP }}
         
@@ -42,7 +35,7 @@ jobs:
       - name: Check the role
         env:
           APP_ID: ${{ env.AZURE_CLIENT_ID }}
-          SUBSCRIPTION_ID: ${{ env.SUBSCRIPTION_ID }}
+          SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           RESOURCE_GROUP: ${{ env.RESOURCE_GROUP }}
           ACR_NAME: ${{ env.ACR_NAME }}
         run: |          
