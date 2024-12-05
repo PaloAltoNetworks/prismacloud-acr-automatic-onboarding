@@ -14,9 +14,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      AZURE_CLIENT_ID: ${{ secrets.APP2_AZURE_CLIENT_ID }}
-      AZURE_CLIENT_SECRET: ${{ secrets.APP2_AZURE_CLIENT_SECRET }}
-      AZURE_TENANT_ID: ${{ secrets.APP2_AZURE_TENANT_ID }}
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       SUBSCRIPTION_ID: ${{ secrets.inputs.SUBSCRIPTION_ID }}
       ACR_NAME: ${{ github.event.inputs.ACR_NAME }}
       RESOURCE_GROUP: ${{ github.event.inputs.RESOURCE_GROUP }}
