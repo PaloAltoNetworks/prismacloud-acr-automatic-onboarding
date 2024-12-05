@@ -30,16 +30,23 @@ jobs:
 
       - name: Azure Login
         uses: azure/login@v1
+        env:
+          SUBSCRIPTION_ID: ${{ env.SUBSCRIPTION_ID }}
         with:
           creds: |
             {
               "clientId": "${{ secrets.APP2_AZURE_CLIENT_ID }}",
               "clientSecret": "${{ secrets.APP2_AZURE_CLIENT_SECRET }}",
-              "subscriptionId": "${{ env.SUBSCRIPTION_ID }}",
+              "subscriptionId": "$SUBSCRIPTION_ID",
               "tenantId": "${{ secrets.APP2_AZURE_TENANT_ID }}"
             }
 
       - name: Check the role
+        env:
+          APP_ID: ${{ env.AZURE_CLIENT_ID }}
+          SUBSCRIPTION_ID: ${{ env.SUBSCRIPTION_ID }}
+          RESOURCE_GROUP: ${{ env.RESOURCE_GROUP }}
+          ACR_NAME: ${{ env.ACR_NAME }}
         run: |          
           az role assignment list --assignee $APP_ID --scope /subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.ContainerRegistry/registries/$ACR_NAME
       
